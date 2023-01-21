@@ -34,15 +34,13 @@ public class MainActivity extends AppCompatActivity
     void initGame() {
         gameLib.listener(this);
         gameLib.setScreenGrid(cols,rows);
+        int[] cellImages = {R.drawable.hexa_cell0, R.drawable.hexa_cell1, R.drawable.hexa_cell2,
+                R.drawable.hexa_cell3, R.drawable.hexa_cell4, R.drawable.hexa_cell5, R.drawable.hexa_cell6};
         for(int row=0; row < rows; row++) {
             for(int col=0; col < cols; col++) {
-                JGameLib.Card cell = gameLib.addCard(R.drawable.hexa_cell0, col, row, 1, 1);
-                cell.addImage(R.drawable.hexa_cell1);
-                cell.addImage(R.drawable.hexa_cell2);
-                cell.addImage(R.drawable.hexa_cell3);
-                cell.addImage(R.drawable.hexa_cell4);
-                cell.addImage(R.drawable.hexa_cell5);
-                cell.addImage(R.drawable.hexa_cell6);
+                JGameLib.Card cell = gameLib.addCard(cellImages[0], col, row, 1, 1);
+                for(int i=1; i < cellImages.length; i++)
+                    cell.addImage(cellImages[i]);
                 cellCards[row][col] = cell;
             }
         }
@@ -67,6 +65,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    boolean isEmptyCell(int x, int y) {
+        return isInArea(x,y) && cellCards[y][x].imageIndex() == 0;
+    }
+
+    boolean isInArea(int x, int y) {
+        return x >= 0 && x < cols && y >= 0 && y < rows;
+    }
+
     void moveNewCell(int gapX, int gapY) {
         moveCol(poNewCell.x, poNewCell.y, gapX, gapY);
         if(poNewCell.y < 2) {
@@ -77,19 +83,12 @@ public class MainActivity extends AppCompatActivity
         poNewCell.y += gapY;
     }
 
-    boolean isEmptyCell(int x, int y) {
-        if(x < 0 || x >= cols || y < 0 || y >= rows || cellCards[y][x].imageIndex() > 0)
-            return false;
-        return true;
-    }
-
     boolean moveCol(int x, int y, int gapX, int gapY) {
         int nextX = x + gapX;
         int nextY = y + gapY;
-        if(x < 0 || x >= cols || y < 0 || y >= rows
-            || nextX < 0 || nextX >= cols || nextY < 0 || nextY >= rows)
+        if(!isInArea(x,y) || !isInArea(nextX,nextY))
             return false;
-        while(y >= 0 && cellCards[y][x].imageIndex() > 0 && nextX >= 0 && nextX < cols && nextY >= 0) {
+        while(y >= 0 && cellCards[y][x].imageIndex() > 0 && isInArea(nextX,nextY)) {
             int imageIndex = cellCards[y][x].imageIndex();
             cellCards[y][x].imageChange(0);
             cellCards[nextY][nextX].imageChange(imageIndex);
@@ -101,24 +100,24 @@ public class MainActivity extends AppCompatActivity
 
     void setStateNewCell() {
         checkMadePoints.clear();
-        poNewCell.set(cols/2,-1);
+        setStateCheckMade();
     }
 
     void setStateCheckMade() {
+        needDropCols.clear();
         poNewCell.set(cols/2,-1);
     }
 
     void newCell2CheckMade() {
-        if(poNewCell.y >= 2) {
-            for(int i=0; i < 3; i++)
-                checkMadePoints.add(new Point(poNewCell.x, poNewCell.y-i));
-        }
+        if(poNewCell.y < 2) return;
+        for(int i=0; i < 3; i++)
+            checkMadePoints.add(new Point(poNewCell.x, poNewCell.y-i));
     }
 
     void checkMade() {
         HashSet<Point> needRemove = new HashSet<>();
         for(Point po : checkMadePoints) {
-            if(po.x < 0 || po.x >= cols || po.y < 0 || po.y >= rows || cellCards[po.y][po.x].imageIndex() == 0)
+            if(!isInArea(po.x,po.y) || isEmptyCell(po.x,po.y))
                 continue;
             int gapX = 1, gapY = 1;
             while(gapX >= 0) {
@@ -144,32 +143,32 @@ public class MainActivity extends AppCompatActivity
             needDropCols.add(po.x);
         }
         checkMadePoints.clear();
-        checkDropCols();
+        dropCols();
     }
 
     int sameCellLength(int x, int y, int gapX, int gapY) {
         int nextX = x + gapX;
         int nextY = y + gapY;
-        if(nextX < 0 || nextX >= cols || nextY < 0 || nextY >= rows ||
-                cellCards[nextY][nextX].imageIndex() != cellCards[y][x].imageIndex())
+        if(!isInArea(x,y) || !isInArea(nextX,nextY) ||
+                cellCards[y][x].imageIndex() != cellCards[nextY][nextX].imageIndex())
             return 0;
         return sameCellLength(nextX, nextY, gapX, gapY) + 1;
     }
 
-    void checkDropCols() {
-        for(int col : (HashSet<Integer>)needDropCols.clone()) {
-            checkDropCol(col);
-            needDropCols.remove(col);
+    void dropCols() {
+        for(int col : needDropCols) {
+            dropCol(col);
         }
+        needDropCols.clear();
     }
 
-    void checkDropCol(int col) {
+    void dropCol(int col) {
         int slow = rows-1;
-        for(int fast=rows-2; fast >= 0; fast --) {
-            if(cellCards[fast][col].imageIndex() == 0) continue;
-            while(slow > fast+1 && cellCards[slow][col].imageIndex() > 0)
+        for(int fast=rows-2; fast >= 0; fast--) {
+            if(isEmptyCell(col,fast)) continue;
+            while(slow > fast+1 && !isEmptyCell(col,slow))
                 slow --;
-            if(slow > fast && cellCards[slow][col].imageIndex() == 0) {
+            if(isEmptyCell(col,slow)) {
                 moveCell(col, fast, col, slow);
                 checkMadePoints.add(new Point(col, slow));
                 slow --;
@@ -210,8 +209,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onBtnDrop(View v) {
-        if(poNewCell.y < 2) return;
-        checkDropCol(poNewCell.x);
+        if(poNewCell.y < 2 || !isEmptyCell(poNewCell.x,poNewCell.y+1))
+            return;
+        dropCol(poNewCell.x);
         setStateCheckMade();
     }
 
