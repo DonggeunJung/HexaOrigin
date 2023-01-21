@@ -89,9 +89,7 @@ public class MainActivity extends AppCompatActivity
         if(!isInArea(x,y) || !isInArea(nextX,nextY))
             return false;
         while(y >= 0 && cellCards[y][x].imageIndex() > 0 && isInArea(nextX,nextY)) {
-            int imageIndex = cellCards[y][x].imageIndex();
-            cellCards[y][x].imageChange(0);
-            cellCards[nextY][nextX].imageChange(imageIndex);
+            moveCell(x, y, nextX, nextY);
             y --;
             nextY --;
         }
