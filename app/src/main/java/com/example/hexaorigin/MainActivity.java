@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class MainActivity extends AppCompatActivity
-        implements JGameLib.GameEvent {
+        implements Mosaic.GameEvent {
     int rows=13, cols=7;
-    JGameLib gameLib = null;
-    JGameLib.Card[][] cellCards = new JGameLib.Card[rows][cols];
+    Mosaic mosaic = null;
+    Mosaic.Card[][] cellCards = new Mosaic.Card[rows][cols];
     Point poNewCell = new Point(cols/2,-1);
     ArrayList<Point> checkMadePoints = new ArrayList();
     HashSet<Integer> needDropCols = new HashSet();
@@ -20,25 +20,25 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        gameLib = findViewById(R.id.gameLib);
+        mosaic = findViewById(R.id.mosaic);
         initGame();
     }
 
     @Override
     protected void onDestroy() {
-        if(gameLib != null)
-            gameLib.clearMemory();
+        if(mosaic != null)
+            mosaic.clearMemory();
         super.onDestroy();
     }
 
     void initGame() {
-        gameLib.listener(this);
-        gameLib.setScreenGrid(cols,rows);
+        mosaic.listener(this);
+        mosaic.setScreenGrid(cols,rows);
         int[] cellImages = {R.drawable.hexa_cell0, R.drawable.hexa_cell1, R.drawable.hexa_cell2,
                 R.drawable.hexa_cell3, R.drawable.hexa_cell4, R.drawable.hexa_cell5, R.drawable.hexa_cell6};
         for(int row=0; row < rows; row++) {
             for(int col=0; col < cols; col++) {
-                JGameLib.Card cell = gameLib.addCard(cellImages[0], col, row, 1, 1);
+                Mosaic.Card cell = mosaic.addCard(cellImages[0], col, row, 1, 1);
                 for(int i=1; i < cellImages.length; i++)
                     cell.addImage(cellImages[i]);
                 cellCards[row][col] = cell;
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity
     void moveNewCell(int gapX, int gapY) {
         moveCol(poNewCell.x, poNewCell.y, gapX, gapY);
         if(poNewCell.y < 2) {
-            int imageIndex = gameLib.random(1, 6);
+            int imageIndex = mosaic.random(1, 6);
             cellCards[0][poNewCell.x].imageChange(imageIndex);
         }
         poNewCell.x += gapX;
@@ -183,10 +183,10 @@ public class MainActivity extends AppCompatActivity
     // User Event start ====================================
 
     public void onBtnStart(View v) {
-        gameLib.stopTimer();
-        gameLib.stopAllWork();
+        mosaic.stopTimer();
+        mosaic.stopAllWork();
         newGame();
-        gameLib.startTimer(0.9);
+        mosaic.startTimer(0.9);
     }
 
     public void onBtnArrow(View v) {
@@ -218,16 +218,16 @@ public class MainActivity extends AppCompatActivity
     // Game Event start ====================================
 
     @Override
-    public void onGameWorkEnded(JGameLib.Card card, JGameLib.WorkType workType) {}
+    public void onGameWorkEnded(Mosaic.Card card, Mosaic.WorkType workType) {}
 
     @Override
-    public void onGameTouchEvent(JGameLib.Card card, int action, float x, float y) {}
+    public void onGameTouchEvent(Mosaic.Card card, int action, float x, float y) {}
 
     @Override
     public void onGameSensor(int sensorType, float x, float y, float z) {}
 
     @Override
-    public void onGameCollision(JGameLib.Card card1, JGameLib.Card card2) {}
+    public void onGameCollision(Mosaic.Card card1, Mosaic.Card card2) {}
 
     @Override
     public void onGameTimer() {

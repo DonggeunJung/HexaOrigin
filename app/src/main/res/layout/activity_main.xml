@@ -8,8 +8,8 @@
     android:background="@color/white"
     tools:context=".MainActivity">
 
-    <com.example.hexaorigin.JGameLib
-        android:id="@+id/gameLib"
+    <com.example.hexaorigin.Mosaic
+        android:id="@+id/mosaic"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,7 +26,7 @@
         android:onClick="onBtnArrow"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnRight"
-        app:layout_constraintTop_toBottomOf="@+id/gameLib"
+        app:layout_constraintTop_toBottomOf="@+id/mosaic"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <Button
@@ -38,7 +38,7 @@
         android:onClick="onBtnArrow"
         app:layout_constraintStart_toEndOf="@+id/btnLeft"
         app:layout_constraintEnd_toStartOf="@+id/btnStart"
-        app:layout_constraintTop_toBottomOf="@+id/gameLib"
+        app:layout_constraintTop_toBottomOf="@+id/mosaic"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <Button
@@ -49,7 +49,7 @@
         android:onClick="onBtnStart"
         app:layout_constraintStart_toEndOf="@+id/btnRight"
         app:layout_constraintEnd_toStartOf="@+id/btnRotate"
-        app:layout_constraintTop_toBottomOf="@+id/gameLib"
+        app:layout_constraintTop_toBottomOf="@+id/mosaic"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <Button
@@ -60,7 +60,7 @@
         android:onClick="onBtnRotate"
         app:layout_constraintStart_toEndOf="@+id/btnStart"
         app:layout_constraintEnd_toStartOf="@+id/btnDrop"
-        app:layout_constraintTop_toBottomOf="@+id/gameLib"
+        app:layout_constraintTop_toBottomOf="@+id/mosaic"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <Button
@@ -72,7 +72,7 @@
         android:onClick="onBtnDrop"
         app:layout_constraintStart_toEndOf="@+id/btnRotate"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gameLib"
+        app:layout_constraintTop_toBottomOf="@+id/mosaic"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
