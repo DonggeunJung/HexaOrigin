@@ -3,6 +3,7 @@ package com.example.hexaorigin;
 import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -221,7 +222,7 @@ public class MainActivity extends AppCompatActivity
     public void onGameWorkEnded(Mosaic.Card card, Mosaic.WorkType workType) {}
 
     @Override
-    public void onGameTouchEvent(Mosaic.Card card, int action, float x, float y) {}
+    public void onGameTouchEvent(Mosaic.Card card, int action, float x, float y, MotionEvent event) {}
 
     @Override
     public void onGameSensor(int sensorType, float x, float y, float z) {}
